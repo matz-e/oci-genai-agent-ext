@@ -13,6 +13,11 @@ variable compartment_ocid {
 variable prefix { 
   default = "starter"
   nullable = false
+
+  validation {
+    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9]*$", var.prefix))
+    error_message = "The variable value must start with a letter and contain only alphanumeric characters."
+  }
 }
 
 # Home Region
@@ -37,11 +42,13 @@ variable instance_shape {
   description="Instance - Shape"    
   nullable = false
 }
+
 variable instance_ocpus { 
   default = 1
   description="Instance - Number of OCPUs"   
   nullable = false
 }
+
 variable instance_shape_config_memory_in_gbs { 
   default = 8
   description="Instance - Memory in GBs"   
