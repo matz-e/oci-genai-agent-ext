@@ -124,7 +124,7 @@ resource_manager_variables_json () {
   sh -c 'unset $1; export -p' sh "$excluded" > $TARGET_DIR/tf_var.sh 2>/dev/null
 
   echo -n "{" > $VAR_FILE_PATH
-  cat $TARGET_DIR/tf_var.sh | sed "s/export TF_VAR_/\"/g" | sed "s/=\"/\": \"/g" | sed ':a;N;$!ba;s/\"\n/\", /g' | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/$/}/'>> $VAR_FILE_PATH  
+  cat $TARGET_DIR/tf_var.sh | sed "s/export TF_VAR_/\"/g" | sed "s/=\"/\": \"/g" | gsed -e ':a;N;$!ba;s/\"\n/\", /g' | gsed -e ':a;N;$!ba;s/\n/\\n/g' | sed '$s/$/}/'>> $VAR_FILE_PATH  
 }
 
 # Used in both infra_as_code = resource_manager and from_resource_manager
