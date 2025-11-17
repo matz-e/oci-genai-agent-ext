@@ -78,13 +78,14 @@ RETURN clob IS
     region varchar2(128);
     compartment_ocid varchar2(128);    
     genai_embed_model varchar2(128);    
+    genai_embed_region varchar2(128);    
 BEGIN 
-    select value into region from AI_AGENT_RAG_CONFIG where key='region';
     select value into compartment_ocid from AI_AGENT_RAG_CONFIG where key='compartment_ocid';    
     select value into genai_embed_model from AI_AGENT_RAG_CONFIG where key='genai_embed_model';    
+    select value into genai_embed_region from AI_AGENT_RAG_CONFIG where key='genai_embed_region';
     resp := DBMS_CLOUD.send_request( 
         credential_name => 'OCI$RESOURCE_PRINCIPAL', 
-        uri =>'https://inference.generativeai.'|| region || '.oci.oraclecloud.com/20231130/actions/embedText',
+        uri =>'https://inference.generativeai.'|| genai_embed_region || '.oci.oraclecloud.com/20231130/actions/embedText',
         method => 'POST', 
         body => UTL_RAW.cast_to_raw( JSON_OBJECT (
             'compartmentId' VALUE compartment_ocid,

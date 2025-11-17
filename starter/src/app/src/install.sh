@@ -73,6 +73,7 @@ begin
   APEX_APP.AI_CONFIG_UPDATE( 'region',              '$TF_VAR_region' );
   APEX_APP.AI_CONFIG_UPDATE( 'compartment_ocid',    '$TF_VAR_compartment_ocid' );
   APEX_APP.AI_CONFIG_UPDATE( 'genai_embed_model',   '$TF_VAR_genai_embed_model' );
+  APEX_APP.AI_CONFIG_UPDATE( 'genai_embed_region',  '$TF_VAR_genai_embed_region' );
   commit;
 end;
 /

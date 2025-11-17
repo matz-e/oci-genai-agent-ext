@@ -19,6 +19,7 @@ export TF_VAR_agent_datasource_ocid="##OPTIONAL/TF_VAR_agent_datasource_ocid##"
 export TF_VAR_genai_meta_model="##TF_VAR_genai_meta_model##"
 export TF_VAR_genai_cohere_model="##TF_VAR_genai_cohere_model##"
 export TF_VAR_genai_embed_model="##TF_VAR_genai_embed_model##"
+export TF_VAR_genai_embed_region="##TF_VAR_genai_embed_region##"
 export TF_VAR_rag_storage="##OPTIONAL/TF_VAR_rag_storage##"
 
 # LibreOffice
