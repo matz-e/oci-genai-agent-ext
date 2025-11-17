@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# set -x
 if [ "$PROJECT_DIR" = "" ]; then
   echo "Error: PROJECT_DIR not set. Please use starter.sh."
   exit 1
@@ -30,7 +31,7 @@ if declare -p | grep -q "__TO_FILL__"; then
 
   store_terraform_tfvars() {
     echo "$1=$2"            
-    sed -i "s&$1=\"__TO_FILL__\"&$1=\"$2\"&" $PROJECT_DIR/terraform.tfvars              
+    sed -i -e "s&$1=\"__TO_FILL__\"&$1=\"$2\"&" $PROJECT_DIR/terraform.tfvars              
     echo "$1 stored in terraform.tfvars"            
     echo       
   }
@@ -222,8 +223,8 @@ if declare -p | grep -q "__TO_FILL__"; then
     export REQUEST="Create a new vault ? (<No> will ask for the ocid of an existing one) ?"
     if accept_request; then  
       # Comment the 2 lines. The vault will be created.
-      sed -i "s/^[ ]*vault_ocid/# vault_ocid/" $PROJECT_DIR/terraform.tfvars     
-      sed -i "s/^[ ]*vault_key_ocid/# vault_key_ocid/" $PROJECT_DIR/terraform.tfvars        
+      sed -i -e "s/^[ ]*vault_ocid/# vault_ocid/" $PROJECT_DIR/terraform.tfvars     
+      sed -i -e "s/^[ ]*vault_key_ocid/# vault_key_ocid/" $PROJECT_DIR/terraform.tfvars        
       unset TF_VAR_vault_ocid
       unset TF_VAR_vault_key_ocid
     else

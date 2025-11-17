@@ -288,14 +288,14 @@ get_user_details() {
       OCI_PRO=$OCI_CLI_PROFILE
     fi    
     sed -n -e "/\[$OCI_PRO\]/,$$p" $HOME/.oci/config > /tmp/ociconfig
-    export TF_VAR_current_user_ocid=`sed -n 's/user=//p' /tmp/ociconfig |head -1`
-    export TF_VAR_fingerprint=`sed -n 's/fingerprint=//p' /tmp/ociconfig |head -1`
-    export TF_VAR_private_key_path=`sed -n 's/key_file=//p' /tmp/ociconfig |head -1`
-    export TF_VAR_region=`sed -n 's/region=//p' /tmp/ociconfig |head -1`
+    export TF_VAR_current_user_ocid=`sed -n 's/user *= *//p' /tmp/ociconfig |head -1`
+    export TF_VAR_fingerprint=`sed -n 's/fingerprint *= *//p' /tmp/ociconfig |head -1`
+    export TF_VAR_private_key_path=`sed -n 's/key_file *= *//p' /tmp/ociconfig |head -1`
+    export TF_VAR_region=`sed -n 's/region *= *//p' /tmp/ociconfig |head -1`
     # Good way to get the home_region is to get it via oci iam tenancy get --tenancy-id xxx -> home_region PREFIX (ex:FRA)
     # That needs then to be converted from prefix to name via the region list (->eu-frankfurt-1). See provider.tf.
     # export TF_VAR_home_region=$TF_VAR_region
-    export TF_VAR_tenancy_ocid=`sed -n 's/tenancy=//p' /tmp/ociconfig |head -1`  
+    export TF_VAR_tenancy_ocid=`sed -n 's/tenancy *= *//p' /tmp/ociconfig |head -1`  
     # echo TF_VAR_current_user_ocid=$TF_VAR_current_user_ocid
     # echo TF_VAR_fingerprint=$TF_VAR_fingerprint
     # echo TF_VAR_private_key_path=$TF_VAR_private_key_path
