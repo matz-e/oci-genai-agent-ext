@@ -15,15 +15,6 @@ resource "oci_objectstorage_bucket" "starter_bucket" {
   freeform_tags = local.freeform_tags
 }
 
-resource "oci_objectstorage_bucket" "starter_agent_bucket" {
-  compartment_id = local.lz_serv_cmp_ocid
-  namespace      = var.namespace
-  name           = "${var.prefix}-agent-bucket"
-  object_events_enabled = true
-
-  freeform_tags = local.freeform_tags
-}
-
 locals {
   bucket_url = "https://objectstorage.${var.region}.oraclecloud.com/n/${var.namespace}/b/${var.prefix}-public-bucket/o"
 }  
