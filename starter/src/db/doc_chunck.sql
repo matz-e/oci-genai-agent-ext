@@ -135,7 +135,7 @@ BEGIN
             -- TO_NUMBER(1) as PAGE_NUMBERS   
         from docs_langchain
         -- where JSON_VALUE(metadata,'$.doc_id') in (select to_char(id) from docs order by vector_distance(summary_embed,  to_vector(embedText( 'what is jazz' ))) fetch first 3 rows only)
-        order by score 
+        order by score DESC
         fetch first top_k rows only;
 
     -- Hybrid Search query (30 Lexical/ 70 Vector)
