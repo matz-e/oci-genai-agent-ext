@@ -5,6 +5,7 @@ import pprint
 import oracledb
 import pathlib
 import shared
+import urllib
 from shared import log
 from shared import dictString
 from shared import signer
@@ -25,11 +26,19 @@ from langchain_community.vectorstores.utils import DistanceStrategy
 from langchain_docling import DoclingLoader
 from langchain_docling.loader import ExportType
 from docling.chunking import HybridChunker
+from docling.document_converter import DocumentConverter
 from langchain_text_splitters import MarkdownHeaderTextSplitter
 
 from typing import List, Tuple
 
 # -- Globals ----------------------------------------------------------------
+
+
+# Cohere Embed v4.0 has a _long_ context window, but the OCI AI Agent RAG tool does
+# not handle large document chunks very well.
+DOCLING_TARGET_TOKENS = 2048
+DOCLING_MAX_CHARACTERS = 8192
+
 
 region = os.getenv("TF_VAR_genai_embed_region")
 embeddings = OCIGenAIEmbeddings(
@@ -294,6 +303,36 @@ def insertTableDocs(value):
 # -- insertTableDocsChunck -----------------------------------------------------------------
 
 
+def get_top_item(item, doc):
+    """Traverse up the element tree and return a direct child of the root."""
+    while item.parent.cref != "#/body":
+        item = item.parent.resolve(doc)
+    return item
+
+
+def chunk_with_docling(file_path: str):
+    """Convert a file into chunks using Docling."""
+    converter = DocumentConverter()
+    chunker = HybridChunker(max_tokens=DOCLING_TARGET_TOKENS)
+    document = converter.convert(file_path).document
+
+    for chunk in chunker.chunk(dl_doc=document):
+        doc_items = chunk.meta.doc_items
+        page = doc_items[0].prov[0].page_no
+        markdown = document.extract_items_range(
+            start=get_top_item(doc_items[0], document),
+            end=get_top_item(doc_items[-1], document),
+        ).export_to_markdown()
+
+        if heading := chunk.meta.headings:
+            markdown = f"{heading}\n\n{markdown}"
+
+        if (text_len := len(markdown)) >= DOCLING_MAX_CHARACTERS:
+            log(f"WARNING chunk length {text_len} in '{file_path}'")
+
+        yield Document(page_content=markdown, metadata={"page_label": page})
+
+
 def insertTableDocsChunck(value, docs, file_path):
     global dbConn
     log("<langchain insertDocsChunck>")
@@ -311,31 +350,7 @@ def insertTableDocsChunck(value, docs, file_path):
         if DOCLING_HYBRID_CHUNK:
             # Advantage: preseve the page numbers / read images PDF
             # Disadvantage: slow
-            chunck_loader = DoclingLoader(
-                file_path=file_path,
-                export_type=ExportType.DOC_CHUNKS,
-                chunker=HybridChunker(),
-            )
-            docs_chunck = chunck_loader.load()
-
-            # Convert the docling metadata format
-            for d in docs_chunck:
-                # Prov format to page_label
-                try:
-                    d.metadata["page_label"] = d.metadata["dl_meta"]["doc_items"][0][
-                        "prov"
-                    ][0]["page_no"]
-                    # log(f"metadata page_label={d.metadata["page_label"]}")
-                except Exception as e:
-                    log(f"metadata page_label - Warning {e}")
-                # Headers to something like MarkdownHeaderTextSplitter
-                try:
-                    if d.metadata["dl_meta"].get("hedings"):
-                        for i, h in enumerate(d.metadata["dl_meta"]["headings"]):
-                            d.metadata[f"Header_{i + 1}"] = h
-                            # log(f"metadata Header_{i+1}={h}")
-                except Exception as e:
-                    log(f"metadata header - Warning {e}")
+            docs_chunck = list(chunk_with_docling(file_path))
         else:
             # Advantage: fast
             splitter = MarkdownHeaderTextSplitter(
@@ -356,7 +371,10 @@ def insertTableDocsChunck(value, docs, file_path):
     for d in docs_chunck:
         d.metadata["doc_id"] = dictString(value, "docId")
         d.metadata["resource_name"] = value["data"]["resourceName"]
-        d.metadata["path"] = value["customized_url_source"]
+        url = urllib.parse.unquote(value["customized_url_source"])
+        if url.endswith(".pdf") and (page := d.metadata.get("page_label")):
+            url += f"#page={page}"
+        d.metadata["path"] = url
         d.metadata["content_type"] = dictString(value, "contentType")
 
     log("-- docs_chunck --------------------")
