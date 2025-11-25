@@ -25,10 +25,15 @@ resource "oci_generative_ai_agent_agent" "starter_agent" {
   compartment_id                 = local.lz_serv_cmp_ocid
   display_name                   = "${var.prefix}-agent"
   description                    = "${var.prefix}-agent"
-  welcome_message                = "How can I help you ?"
+  welcome_message                = var.agent_welcome_message
   knowledge_base_ids = [
     oci_generative_ai_agent_knowledge_base.starter_agent_kb.id
   ]  
+  llm_config {
+    routing_llm_customization {
+      instruction = var.agent_routing_instructions
+    }
+  }
   freeform_tags = local.freeform_tags
 }
 

@@ -14,10 +14,21 @@ variable prefix {
   default = "starter"
   nullable = false
 
+  # Usage as a DNS prefix requires stringent validation
   validation {
     condition     = can(regex("^[a-zA-Z][a-zA-Z0-9]*$", var.prefix))
     error_message = "The variable value must start with a letter and contain only alphanumeric characters."
   }
+}
+
+variable agent_routing_instructions {
+  type = string
+  default = ""
+}
+
+variable agent_welcome_message {
+  type = string
+  default = "How can I help you?"
 }
 
 # Home Region
