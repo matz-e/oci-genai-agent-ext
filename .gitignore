@@ -52,3 +52,9 @@ Temporary Items
 .csr
 .pem%  
 
+.ipynb_checkpoints
+__pycache__
+uv.lock
+
+terraform.tfvars-e
+.terraform.lock.hcl
