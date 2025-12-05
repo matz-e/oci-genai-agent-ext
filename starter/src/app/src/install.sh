@@ -7,14 +7,14 @@ cd $SCRIPT_DIR
 function download()
 {
    echo "Downloading - $1"
-   wget -nv $1
+   wget -nv -c $1
 }
 
 # Anonymize
 sudo dnf install -y poppler-utils mesa-libGL
 
 # Python 
-sudo dnf install -y python3.12 python3.12-pip python3-devel wget
+sudo dnf install -y python3.12 python3.12-pip python3-devel wget git
 sudo update-alternatives --set python /usr/bin/python3.12
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv venv myenv
@@ -22,9 +22,11 @@ source myenv/bin/activate
 uv pip install -r src/requirements.txt
 
 # PDFKIT
-download https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.centos8.x86_64.rpm
-sudo dnf localinstall -y wkhtmltox-0.12.6-1.centos8.x86_64.rpm
-mv *.rpm /tmp
+(
+   cd /tmp
+   download https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.centos8.x86_64.rpm
+   sudo dnf localinstall -y wkhtmltox-0.12.6-1.centos8.x86_64.rpm
+)
 
 # LibreOffice (convert docx to PDF)
 if [ "${INSTALL_LIBREOFFICE}" != "no" ]; then
@@ -42,9 +44,11 @@ if [ "${INSTALL_LIBREOFFICE}" != "no" ]; then
     echo LIBRE_OFFICE_EXE=$LIBRE_OFFICE_EXE
 
     # Chrome + Selenium to get webpage
-    cd /tmp
-    download https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
-    sudo dnf localinstall -y google-chrome-stable_current_x86_64.rpm
+    (
+       cd /tmp
+       download https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+       sudo dnf localinstall -y google-chrome-stable_current_x86_64.rpm
+    )
 fi 
 cd $SCRIPT_DIR
 
