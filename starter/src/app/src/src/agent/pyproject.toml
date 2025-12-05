@@ -1,0 +1,15 @@
+[project]
+name = "rag-agent"
+version = "0.1.0"
+
+dependencies = [
+    "streamlit",
+    "langchain-community",
+    "langchain-openai",
+    "langchain-oci @ git+https://github.com/matz-e/langchain-oracle@loosen-requirements#subdirectory=libs/oci",
+    "oci",
+    "oci-openai",
+    "oracledb",
+    "python-dotenv",
+    "watchdog",
+]

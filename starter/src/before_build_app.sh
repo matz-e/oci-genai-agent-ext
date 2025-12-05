@@ -6,6 +6,8 @@ get_attribute_from_tfstate "STREAM_MESSAGE_ENDPOINT" "starter_stream" "messages_
 get_id_from_tfstate "TF_VAR_agent_datasource_ocid" "starter_agent_ds" 
 get_id_from_tfstate "TF_VAR_agent_endpoint_ocid" "starter_agent_endpoint" 
 
+export NLB_IP=$(jq -r '.resources[] | select(.name=="starter_nlb") | .instances[0].attributes.ip_addresses[] | select(.is_public==true) | .ip_address' $STATE_FILE)
+
 get_id_from_tfstate "APP_SUBNET_OCID" "starter_app_subnet" 
 get_id_from_tfstate "DB_SUBNET_OCID" "starter_db_subnet" 
 

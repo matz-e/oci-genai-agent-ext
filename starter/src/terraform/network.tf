@@ -146,7 +146,7 @@ resource "oci_core_security_list" "starter_security_list" {
 
     tcp_options {
       min = 8080
-      max = 8080
+      max = 8082
     }
   }  
 

@@ -22,7 +22,9 @@ echo
 echo "URLs" > $FILE_DONE
 append_done "-----------------------------------------------------------------------"
 append_done "Streamlit:"
-append_done "http://${NLB_IP}:8080/"
+append_done "http://${NLB_IP}:80/"
+append_done "  User: apex_app"
+append_done "  Password: $TF_VAR_db_password"
 append_done
 append_done "-----------------------------------------------------------------------"
 append_done "APEX login:"

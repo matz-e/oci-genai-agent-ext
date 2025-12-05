@@ -82,4 +82,25 @@ EOF
 
 # MCP Firewall (optional)
 sudo firewall-cmd --zone=public --add-port=8081/tcp --permanent
+sudo firewall-cmd --zone=public --add-port=8082/tcp --permanent
 
+# Agent
+sudo dnf install -y podman
+
+# active=$(podman ps --format json|jq -r '.[] | select(.Names | index("agent")) | "running"')
+# if [[ "${active}" == "running" ]]; then
+#   podman kill agent
+# fi
+
+cat <<EOF > agent.env
+COMPARTMENT_ID=${TF_VAR_compartment_ocid}
+
+DB_USER=${DB_USER}
+DB_PASSWORD=${DB_PASSWORD}
+DB_URL=${DB_URL}
+
+EXTERNAL_IP=${OCI_NLB_IP}
+EOF
+
+podman build -t agent src/agent
+podman run -d --env-file agent.env --name agent --replace -p 8082:80 agent

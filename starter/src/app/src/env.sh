@@ -22,6 +22,9 @@ export TF_VAR_genai_embed_model="##TF_VAR_genai_embed_model##"
 export TF_VAR_genai_embed_region="##TF_VAR_genai_embed_region##"
 export TF_VAR_rag_storage="##OPTIONAL/TF_VAR_rag_storage##"
 
+# OCI NLB
+export OCI_NLB_IP="##NLB_IP##"
+
 # LibreOffice
 export INSTALL_LIBREOFFICE="##OPTIONAL/TF_VAR_install_libreoffice##"
 
